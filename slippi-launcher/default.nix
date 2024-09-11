@@ -20,7 +20,7 @@ stdenvNoCC.mkDerivation rec {
 
     extraInstallCommands = ''
       source "${makeWrapper}/nix-support/setup-hook"
-      wrapProgram $out/bin/slippi-launcher-${version} \
+      wrapProgram $out/bin/slippi-launcher \
         --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
     '';
   };
@@ -28,7 +28,7 @@ stdenvNoCC.mkDerivation rec {
   desktopItems = [
     (makeDesktopItem {
       name = "slippi-launcher";
-      exec = "slippi-launcher-${version}";
+      exec = "slippi-launcher";
       icon = "slippi-launcher";
       desktopName = "Slippi Launcher";
       comment = "The way to play Slippi Online and watch replays";
