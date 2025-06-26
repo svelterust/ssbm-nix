@@ -1,49 +1,50 @@
-{ stdenv
-, lib
-, makeDesktopItem
-, slippi-desktop
-, playbackSlippi
-, fetchFromGitHub
-, makeWrapper
-, mesa
-, pkg-config
-, cmake
-, bluez
-, ffmpeg
-, libao
-, libGLU
-, gtk2
-, gtk3
-, wrapGAppsHook
-, glib
-, glib-networking
-, gettext
-, xorg
-, readline
-, openal
-, libevdev
-, portaudio
-, libusb1
-, libpulseaudio
-, udev
-, gnumake
-, wxGTK32
-, gdk-pixbuf
-, soundtouch
-, miniupnpc
-, mbedtls_2
-, curl
-, lzo
-, sfml
-, enet
-, xdg-utils
-, hidapi
-, webkitgtk
-, vulkan-loader
-, rustc
-, cargo
-, rustPlatform
-, alsa-lib
+{
+  stdenv,
+  lib,
+  makeDesktopItem,
+  slippi-desktop,
+  playbackSlippi,
+  fetchFromGitHub,
+  makeWrapper,
+  mesa,
+  pkg-config,
+  cmake,
+  bluez,
+  ffmpeg,
+  libao,
+  libGLU,
+  gtk2,
+  gtk3,
+  wrapGAppsHook,
+  glib,
+  glib-networking,
+  gettext,
+  xorg,
+  readline,
+  openal,
+  libevdev,
+  portaudio,
+  libusb1,
+  libpulseaudio,
+  udev,
+  gnumake,
+  wxGTK32,
+  gdk-pixbuf,
+  soundtouch,
+  miniupnpc,
+  mbedtls_2,
+  curl,
+  lzo,
+  sfml,
+  enet,
+  xdg-utils,
+  hidapi,
+  webkitgtk_6_0,
+  vulkan-loader,
+  rustc,
+  cargo,
+  rustPlatform,
+  alsa-lib,
 }:
 let
 
@@ -53,7 +54,10 @@ let
     comment = "Play Melee Online!";
     desktopName = "Slippi-Netplay";
     genericName = "Wii/GameCube Emulator";
-    categories = [ "Game" "Emulator" ];
+    categories = [
+      "Game"
+      "Emulator"
+    ];
     startupNotify = false;
   };
 
@@ -63,7 +67,10 @@ let
     comment = "Watch Your Slippi Replays";
     desktopName = "Slippi-Playback";
     genericName = "Wii/GameCube Emulator";
-    categories = [ "Game" "Emulator" ];
+    categories = [
+      "Game"
+      "Emulator"
+    ];
     startupNotify = false;
   };
 
@@ -71,8 +78,7 @@ in
 stdenv.mkDerivation rec {
   pname = "slippi-ishiiruka";
   version = "3.3.0";
-  name =
-    "${pname}-${version}-${if playbackSlippi then "playback" else "netplay"}";
+  name = "${pname}-${version}-${if playbackSlippi then "playback" else "netplay"}";
   src = fetchFromGitHub {
     owner = "project-slippi";
     repo = "Ishiiruka";
@@ -88,7 +94,11 @@ stdenv.mkDerivation rec {
   };
 
   outputs = [ "out" ];
-  makeFlags = [ "VERSION=us" "-s" "VERBOSE=1" ];
+  makeFlags = [
+    "VERSION=us"
+    "-s"
+    "VERBOSE=1"
+  ];
   hardeningDisable = [ "format" ];
 
   cmakeFlags = [
@@ -98,11 +108,13 @@ stdenv.mkDerivation rec {
     "-DCMAKE_SKIP_BUILD_RPATH=ON"
   ] ++ lib.optional (playbackSlippi) "-DIS_PLAYBACK=true";
 
-  postBuild = with lib;
+  postBuild =
+    with lib;
     optionalString playbackSlippi ''
       rm -rf ../Data/Sys/GameSettings
       cp -r "${slippi-desktop}/app/dolphin-dev/overwrite/Sys/GameSettings" ../Data/Sys
-    '' + ''
+    ''
+    + ''
       cp -r -n ../Data/Sys/ Binaries/
       cp -r Binaries/ $out
       mkdir -p $out/lib
@@ -111,23 +123,26 @@ stdenv.mkDerivation rec {
     '';
 
   installPhase =
-    if playbackSlippi then ''
-      wrapProgram "$out/dolphin-emu" \
-        --set "GDK_BACKEND" "x11" \
-        --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
-        --prefix LD_LIBRARY_PATH : "${vulkan-loader}/lib" \
-        --prefix PATH : "${xdg-utils}/bin"
-      ln -s $out/dolphin-emu $out/bin/slippi-playback
-      ln -s ${playback-desktop}/share/applications $out/share
-    '' else ''
-      wrapProgram "$out/dolphin-emu" \
-        --set "GDK_BACKEND" "x11" \
-        --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
-        --prefix LD_LIBRARY_PATH : "${vulkan-loader}/lib" \
-        --prefix PATH : "${xdg-utils}/bin"
-      ln -s $out/dolphin-emu $out/bin/slippi-netplay
-      ln -s ${netplay-desktop}/share/applications $out/share
-    '';
+    if playbackSlippi then
+      ''
+        wrapProgram "$out/dolphin-emu" \
+          --set "GDK_BACKEND" "x11" \
+          --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
+          --prefix LD_LIBRARY_PATH : "${vulkan-loader}/lib" \
+          --prefix PATH : "${xdg-utils}/bin"
+        ln -s $out/dolphin-emu $out/bin/slippi-playback
+        ln -s ${playback-desktop}/share/applications $out/share
+      ''
+    else
+      ''
+        wrapProgram "$out/dolphin-emu" \
+          --set "GDK_BACKEND" "x11" \
+          --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
+          --prefix LD_LIBRARY_PATH : "${vulkan-loader}/lib" \
+          --prefix PATH : "${xdg-utils}/bin"
+        ln -s $out/dolphin-emu $out/bin/slippi-netplay
+        ln -s ${netplay-desktop}/share/applications $out/share
+      '';
 
   nativeBuildInputs = [
     pkg-config
@@ -178,7 +193,7 @@ stdenv.mkDerivation rec {
     enet
     xdg-utils
     hidapi
-    webkitgtk
+    webkitgtk_6_0
     alsa-lib
   ];
 }
