@@ -156,7 +156,6 @@ stdenv.mkDerivation rec {
   buildInputs = [
     vulkan-loader
     makeWrapper
-    mesa.drivers
     mesa
     pkg-config
     bluez
